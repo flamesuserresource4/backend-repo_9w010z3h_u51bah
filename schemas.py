@@ -1,48 +1,39 @@
 """
-Database Schemas
+Database Schemas for Fintweet
 
-Define your MongoDB collection schemas here using Pydantic models.
-These schemas are used for data validation in your application.
-
-Each Pydantic model represents a collection in your database.
-Model name is converted to lowercase for the collection name:
-- User -> "user" collection
-- Product -> "product" collection
-- BlogPost -> "blogs" collection
+Each Pydantic model represents a collection in MongoDB.
+Class name lowercased = collection name.
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
-# Example schemas (replace with your own):
+class WatchItem(BaseModel):
+    ticker: str = Field(..., description="Ticker symbol, e.g., AAPL")
+    notes: Optional[str] = Field(None, description="Optional notes for the ticker")
 
-class User(BaseModel):
-    """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+class Prediction(BaseModel):
+    ticker: str
+    predicted_close: float
+    message: str
 
-class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+class SentimentPoint(BaseModel):
+    date: str
+    positive: float
+    negative: float
+    neutral: float
 
-# Add your own schemas here:
-# --------------------------------------------------
+class PricePoint(BaseModel):
+    date: str
+    close: float
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class StockSnapshot(BaseModel):
+    ticker: str
+    open: float
+    close: float
+    volume: float
+    percent_change: float
+
+class Watchlist(BaseModel):
+    user_id: str
+    tickers: List[str] = []
